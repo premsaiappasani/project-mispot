@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Verify | MiSpot</title>
+    <link rel="icon" href="mispot.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <style type="text/css">
+      body {
+        background: #ddd;
+        color: black;
+      }
+      hr {
+        margin: 6px;
+      }
+      a {
+        margin-left: 8px;
+        text-decoration: none;
+        color: #aaaaaa;
+      }
+      video {
+        display: block;
+      }
+
+      section {
+        opacity: 1;
+        transition: opacity 500ms ease-in-out;
+      }
+      .removed {
+        display: none;
+      }
+
+      .invisible {
+        opacity: 0.2;
+      }
+
+      .camView {
+        position: relative;
+        float: left;
+        width: calc(100% - 20px);
+        margin: 10px;
+        cursor: pointer;
+      }
+
+      .camView p {
+        position: absolute;
+        padding: 5px;
+        background-color: rgba(255, 111, 0, 0.85);
+        color: #fff;
+        border: 1px dashed rgba(255, 255, 255, 0.7);
+        z-index: 2;
+        font-size: 12px;
+      }
+
+      .highlighter {
+        background: rgba(0, 255, 0, 0.25);
+        border: 1px dashed #fff;
+        z-index: 1;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body id="bodyId">
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-dark"
+      style="position: relative; color: #f4d504 !important"
+    >
+      <div class="container-fluid">
+        <img src="mispotimg.png" style="height: 50px; display: inline" />
+        <a
+          class="navbar-brand"
+          href="https://mismatchesspotted.el.r.appspot.com/home"
+          style="
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #f4d504 !important;
+          "
+          ><div>MiSpot</div>
+          <div style="font-size: 0.3em">Mismatches Spotted</div></a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="logreg" style="position: absolute; right: 60px">
+          <span class="nav-item"> </span>
+        </div>
+        <div class="collapse navbar-collapse bg-dark" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="https://mismatchesspotted.el.r.appspot.com/home"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                class="nav-link"
+                href="https://mismatchesspotted.el.r.appspot.com/login"
+                >Login</a
+              >
+            </li>
+            <li>
+              <a
+                class="nav-link"
+                href="https://mismatchesspotted.el.r.appspot.com/signup"
+                >Register</a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownMenuLink"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Docs
+              </a>
+              <ul
+                class="dropdown-menu"
+                aria-labelledby="navbarDropdownMenuLink"
+                style="background-color: #212529 !important"
+              >
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://mismatchesspotted.el.r.appspot.com/demo"
+                    >Demo</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://mismatchesspotted.el.r.appspot.com/start"
+                    >Getting Started</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://mismatchesspotted.el.r.appspot.com/pricing"
+                    >Pricing</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div
+      class="spinner-border text-dark"
+      style="
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20%;
+        align-self: center;
+      "
+      id="gif"
+      role="status"
+    >
+      <span class="sr-only"></span>
+    </div>
+    <div id="roll"></div>
+    <section id="demos" class="" style="visibility: hidden">
+      <h3 style="text-align: center; color: black">
+        <span id="score">0</span>% Matched with <span id="str2">bottle</span>
+      </h3>
+      <div id="liveView" class="camView">
+        <button
+          class="btn btn-outline-dark"
+          id="webcamButton"
+          style="
+            color: black;
+            size: 1.5em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 5px;
+            padding: 5px 5px 5px 5px;
+            background-color: #aaa;
+            margin: 1px solid grey;
+          "
+        >
+          Enable Webcam
+        </button>
+        <video
+          id="webcam"
+          autoplay
+          width="640"
+          height="480"
+          style="
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 70px;
+          "
+        ></video>
+        <canvas
+          id="canvas"
+          width="640"
+          height="480"
+          style="visibility: hidden"
+        ></canvas>
+        <div id="qr-reader" style="width: 600px"></div>
+      </div>
+      <div id="submit"></div>
+      <button
+        onclick="sendImg()"
+        id="fbutton"
+        class="btn btn-dark position-absolute start-50 translate-middle"
+        style="visibility: hidden; margin-top: 40px"
+      >
+        click here if item can't be verified
+      </button>
+    </section>
+    <!-- <script>
+      src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"
+      type="text/javascript"
+    </script> -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"
+      type="text/javascript"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script type="text/javascript">
+      const video = document.getElementById("webcam");
+      const liveView = document.getElementById("liveView");
+      const demosSection = document.getElementById("demos");
+      const enableWebcamButton = document.getElementById("webcamButton");
+      let canvas = document.querySelector("#canvas");
+      var match = undefined;
+      // code to ask for the objet to be detected
+      let ttid = window.location.href;
+      ttid = ttid.slice(54);
+      let t1 = 0;
+      let t2 = 0;
+
+      var txt = undefined;
+      var prev = undefined;
+      const req = new XMLHttpRequest();
+      req.onload = function () {
+        try {
+          txt = this.responseText;
+          txt = JSON.parse(txt);
+          prev = txt.pre;
+          txt = txt.ado;
+          match = txt;
+          document.getElementById("str2").innerHTML = match;
+          console.log(txt);
+          console.log(prev);
+        } catch (err) {
+          console.log(err);
+          alert("Unable to fetch data!");
+        }
+      };
+
+      req.open(
+        "GET",
+        "https://mismatchesspotted.el.r.appspot.com/barcodedata/" + ttid,
+        true
+      );
+      console.log(ttid);
+      req.send();
+      req.onerror = function () {};
+
+      //end of req
+
+      function getUserMediaSupported() {
+        return !!(
+          navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+        );
+      }
+      if (getUserMediaSupported()) {
+        enableWebcamButton.addEventListener("click", enableCam);
+      } else {
+        console.warn("getUserMedia() is not supported by your browser");
+      }
+      function enableCam(event) {
+        var minutes = 1000 * 60;
+        var hours = minutes * 60;
+        var days = hours * 24;
+        var d = new Date();
+        var t = d.getTime();
+
+        var y = Math.round(t % days);
+        y = Math.round(y / 1000);
+        t1 = y;
+        if (!model) {
+          return;
+        }
+        enableWebcamButton.remove();
+        document.getElementById("fbutton").style.visibility = "visible";
+        event.target.classList.add("removed");
+        const constraints = {
+          video: true,
+        };
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then(function (stream) {
+            video.srcObject = stream;
+            video.addEventListener("loadeddata", predictWebcam);
+          });
+      }
+      var image_data_url = "";
+      function capture() {
+        console.log("captured");
+        canvas
+          .getContext("2d")
+          .drawImage(video, 0, 0, canvas.width, canvas.height);
+        image_data_url = canvas.toDataURL("image/jpeg");
+      }
+      let time = 0;
+      var h = 60;
+      var model = true;
+      var model = undefined;
+      cocoSsd.load().then(function (loadedModel) {
+        document.getElementById("gif").remove();
+        model = loadedModel;
+        console.log("done");
+        demosSection.style.visibility = "visible";
+      });
+      var children = [];
+      let score = document.getElementById("score");
+      function predictWebcam() {
+        model.detect(video).then(function (predictions) {
+          for (let i = 0; i < children.length; i++) {
+            liveView.removeChild(children[i]);
+          }
+          children.splice(0);
+          for (let n = 0; n < predictions.length; n++) {
+            // var match = document.getElementById("str2").innerText;
+            if (match === predictions[n].class) {
+              score.innerText = `${parseInt(predictions[n].score * 100)}`;
+            }
+            // score.innerText = `${parseInt(predictions[n].score * 100)}`;
+            if (predictions[n].score > 0.66) {
+              let ss = predictions[n].score * 100;
+              ss = parseInt(ss);
+              const p = document.createElement("p");
+              hii = document.getElementById("webcam");
+              sty = getComputedStyle(hii);
+              p.innerText = predictions[n].class;
+              p.style =
+                "margin-left: " +
+                (predictions[n].bbox[0] + parseInt(sty.marginLeft)) +
+                "px; margin-top: " +
+                (predictions[n].bbox[1] - 10) +
+                "px; width: " +
+                (predictions[n].bbox[2] - 10) +
+                "px; top: 0; left: 0;";
+              const highlighter = document.createElement("div");
+              highlighter.setAttribute("class", "highlighter");
+              highlighter.style =
+                "left: " +
+                (predictions[n].bbox[0] + parseInt(sty.marginLeft)) +
+                "px; top: " +
+                predictions[n].bbox[1] +
+                "px; width: " +
+                predictions[n].bbox[2] +
+                "px; height: " +
+                predictions[n].bbox[3] +
+                "px;";
+              if (p.innerText === match) {
+                if (ss > h) {
+                  var minutes = 1000 * 60;
+                  var hours = minutes * 60;
+                  var days = hours * 24;
+                  var d = new Date();
+                  var t = d.getTime();
+
+                  var y = Math.round(t % days);
+                  y = Math.round(y / 1000);
+                  t2 = y;
+                  time = t2 - t1;
+                  console.log(time, t2, t1);
+                  canvas
+                    .getContext("2d")
+                    .drawImage(video, 0, 0, canvas.width, canvas.height);
+                  image_data_url = canvas.toDataURL("image/jpeg");
+                  let h = ss;
+                  t = time;
+                  let img = image_data_url;
+                  functocall(h, t, img);
+                  h = 100;
+                }
+              }
+              liveView.appendChild(highlighter);
+              liveView.appendChild(p);
+              children.push(highlighter);
+              children.push(p);
+            }
+          }
+          window.requestAnimationFrame(predictWebcam);
+        });
+      }
+      var numbver = 0;
+      function functocall(h, t, img) {
+        if (numbver === 0) {
+          numbver++;
+          var httpPost = new XMLHttpRequest(),
+            path = "https://mismatchesspotted.el.r.appspot.com/status/" + ttid,
+            data = JSON.stringify({ h, t, img });
+          console.log(data);
+          httpPost.onreadystatechange = function (err) {
+            if (httpPost.readyState == 4 && httpPost.status == 200) {
+              console.log(httpPost.responseText);
+              console.log("response came");
+              location.replace(httpPost.responseText);
+            } else {
+              console.log(err);
+            }
+          };
+          // Set the content type of the request to json since that's what's being sent
+          httpPost.open("POST", path, true);
+          httpPost.send(data);
+        }
+      }
+      function done() {
+        document.getElementById("roll").innerHTML = " ";
+        document.getElementById("demos").style.visibility = "visible";
+      }
+
+      function timeWaste() {
+        document.getElementById("bodyId").innerHTML =
+          '<div\
+            class="spinner-border text-dark"\
+            style="\
+              display: block;\
+              margin-left: auto;\
+              margin-right: auto;\
+              margin-top: 20%;\
+              align-self: center;\
+            "\
+            id="gif"\
+            role="status"\
+          >\
+            <span class="sr-only"></span>\
+          </div>';
+        setTimeout(revert(), 1000);
+        console.log(txt);
+      }
+      function revert() {
+        location.replace(txt);
+      }
+      function sendImg() {
+        canvas
+          .getContext("2d")
+          .drawImage(video, 0, 0, canvas.width, canvas.height);
+        image_data_url = canvas.toDataURL("image/jpeg");
+        let img = image_data_url;
+        var httpPost = new XMLHttpRequest(),
+          path =
+            "https://mismatchesspotted.el.r.appspot.com/notverified/" + ttid,
+          data = JSON.stringify({ img });
+        httpPost.onreadystatechange = function (err) {
+          if (httpPost.readyState == 4 && httpPost.status == 200) {
+            console.log(httpPost.responseText);
+            console.log("response came");
+            location.replace(httpPost.responseText);
+          } else {
+            console.log(err);
+          }
+        };
+        // Set the content type of the request to json since that's what's being sent
+        httpPost.open("POST", path, true);
+        httpPost.send(data);
+        h = 100;
+      }
+    </script>
+  </body>
+</html>
